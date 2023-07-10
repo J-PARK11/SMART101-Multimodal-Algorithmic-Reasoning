@@ -55,7 +55,7 @@ def train(args, dataloader, im_backbone):
     else:
         model = net.SMART_Net(args, im_backbone=im_backbone)
 
-    model = model.cuda()
+    model = model.to(gv.device)
     parameters = model.parameters()
     if not args.no_meta:
         anshead_parameters = list(model.ans_decoder.parameters())
@@ -93,10 +93,10 @@ def train(args, dataloader, im_backbone):
         model.train()
         tot_loss = 0.0
         for i, (im, q, _, a, av, pids) in tqdm(enumerate(train_loader)):
-            im = im.cuda()
-            q = q.cuda()
-            a = a.cuda()
-            av = av.cuda()
+            im = im.to(device)
+            q = q.to(device)
+            a = a.to(device)
+            av = av.to(device)
             if args.no_meta:
                 out = model(im, q, puzzle_ids=pids)
                 loss = criterion(out, av, pids)
@@ -133,8 +133,8 @@ def train(args, dataloader, im_backbone):
         puzzle_acc = {}
         with torch.no_grad():
             for i, (im, q, o, a, av, pids) in enumerate(val_loader):
-                im = im.cuda()
-                q = q.cuda()
+                im = im.to(device)
+                q = q.to(device)
                 o = np.array(o)
                 out = model(im, q, puzzle_ids=pids)
 
@@ -298,8 +298,6 @@ def get_data_loader(args, split, batch_size=100, shuffle=True, num_workers=6, pi
 
 
 if __name__ == "__main__":
-    device = "cuda"
-
     parser = argparse.ArgumentParser(description="SMART dataset")
     parser.add_argument(
         "--puzzles", default="all", type=str, help="comma separated / all / puzzle groups (counting,math etc.)"

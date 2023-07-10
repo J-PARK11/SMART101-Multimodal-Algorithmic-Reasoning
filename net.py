@@ -13,7 +13,6 @@ warnings.filterwarnings("ignore")
 import pdb
 import pickle
 
-import clip
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import models
@@ -124,17 +123,17 @@ class SMART_VL_Net(nn.Module):
         )
         inputs["input_ids_masked"] = inputs["input_ids"].detach().clone()
         inputs["bool_masked_pos"] = torch.zeros_like(inputs["bool_masked_pos"])
-        inputs = inputs.to("cuda")
+        inputs = inputs.to(gv.device)
         return inputs
 
     def encode_image(self, im_feat, pids=None):
         if self.use_single_image_head:
             y = self.im_encoder(im_feat)
         else:
-            y = torch.zeros(len(im_feat), im_feat.shape[1], self.out_dim).cuda()
+            y = torch.zeros(len(im_feat), im_feat.shape[1], self.out_dim).to(gv.device)
             for t in range(len(self.puzzle_ids)):
                 idx = pids == int(self.puzzle_ids[t])
-                idx = idx.cuda()
+                idx = idx.to(gv.device)
                 if idx.sum() > 0:
                     y[idx] = F.relu(self.im_encoder[int(self.puzzle_ids[t])](im_feat[idx]))
         return y
@@ -287,7 +286,7 @@ class SMART_Net(nn.Module):
 
         # language backbones
         if self.use_clip_text:
-            self.q_encoder, _ = clip.load("ViT-B/32", device="cuda")
+            self.q_encoder, _ = clip.load("ViT-B/32", device=gv.device)
             self.clip_dim = 512
             self.q_MLP = nn.Sequential(
                 nn.Linear(self.clip_dim, self.h_sz), nn.ReLU(), nn.Linear(self.h_sz, self.out_dim)
@@ -320,7 +319,7 @@ class SMART_Net(nn.Module):
 
     def process_MAE(self, x):
         x = self.decode_image(x)  # get from tensor to PIL images
-        inputs = self.preprocess(images=x, return_tensors="pt").to("cuda")
+        inputs = self.preprocess(images=x, return_tensors="pt").to(gv.device)
         outputs = self.im_backbone(**inputs)
         return outputs.last_hidden_state.mean(1)
 
@@ -397,10 +396,10 @@ class SMART_Net(nn.Module):
         if self.use_single_image_head:
             y = self.im_encoder(x)
         else:
-            y = torch.zeros(len(im), self.out_dim).cuda()
+            y = torch.zeros(len(im), self.out_dim).to(gv.device)
             for t in range(len(self.puzzle_ids)):
                 idx = pids == int(self.puzzle_ids[t])
-                idx = idx.cuda()
+                idx = idx.to(gv.device)
                 if idx.sum() > 0:
                     y[idx] = F.relu(self.im_encoder[int(self.puzzle_ids[t])](x[idx]))
 
@@ -423,7 +422,7 @@ class SMART_Net(nn.Module):
         elif self.word_embed == "gpt" or "bert" or "glove":
             if not self.is_challenge: # for challenge, we already encode in the dataloader.
                 text = self.decode_text(text)
-                q_enc = torch.zeros(len(text), gv.max_qlen, gv.word_dim).cuda()
+                q_enc = torch.zeros(len(text), gv.max_qlen, gv.word_dim).to(gv.device)
                 for ii, tt in enumerate(text):
                     q_feat = gv.word_embed(tt)
                     q_enc[ii, : min(gv.max_qlen, len(q_feat)), :] = q_feat
@@ -478,14 +477,14 @@ def load_pretrained_models(args, model_name, model=None):
     if args.test and model is not None:
         model_path = os.path.join(args.location, "ckpt_%s_%s_%s.pth" % (args.model_name, args.word_embed, args.seed))
         print("test: loading checkpoint %s ..." % (model_path))
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, map_location=torch.device(gv.device))
         model.load_state_dict(checkpoint["net"], strict=True)
         return
     
     if args.challenge and model is not None:
         model_path = args.pretrained_model_path
         print("challenge: loading checkpoint %s ..." % (model_path))
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, map_location=torch.device(gv.device))
         model.load_state_dict(checkpoint["net"], strict=True)
         return 
 
@@ -522,7 +521,8 @@ def load_pretrained_models(args, model_name, model=None):
         model = FlavaForPreTraining.from_pretrained("facebook/flava-full").eval()
         preprocess = FlavaProcessor.from_pretrained("facebook/flava-full")
     elif args.model_name == "clip":
-        model, preprocess = clip.load("ViT-B/32", device="cuda")
+        import clip
+        model, preprocess = clip.load("ViT-B/32", device=gv.device)
     elif args.model_name == "mae":
         from transformers import AutoFeatureExtractor, ViTMAEModel
 
@@ -536,7 +536,7 @@ def load_pretrained_models(args, model_name, model=None):
     if args.pretrained:
         if os.path.isfile(args.pretrained):
             print("=> loading checkpoint '{}'".format(args.pretrained))
-            checkpoint = torch.load(args.pretrained, map_location="cpu")
+            checkpoint = torch.load(args.pretrained, map_location=torch.device(gv.device))
 
             # rename moco pre-trained keys
             state_dict = checkpoint["state_dict"]

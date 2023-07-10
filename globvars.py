@@ -19,7 +19,8 @@ class GPT2:
         super(GPT2, self).__init__()
         from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-        self.model = GPT2LMHeadModel.from_pretrained("gpt2").to("cuda")
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model = GPT2LMHeadModel.from_pretrained("gpt2").to(self.device)
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         self.word_dim = 768
 
@@ -43,8 +44,8 @@ class BERT:
     def __init__(self):
         super(BERT, self).__init__()
         from transformers import BertModel, BertTokenizer
-
-        self.model = BertModel.from_pretrained("bert-base-uncased").to("cuda")
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
         self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         self.word_dim = 768
 
@@ -53,10 +54,10 @@ class BERT:
 
     def word_embed(self, sentence):
         with torch.no_grad():
-            inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to("cuda")
+            inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(self.device)
             outputs = self.model(**inputs)
             word_feats = outputs.last_hidden_state
-        return torch.tensor(word_feats.squeeze()).cuda()
+        return torch.tensor(word_feats.squeeze()).to(self.device)
 
 
 class GloVe:
@@ -84,8 +85,9 @@ def globals_init(args):
     global puzzles_not_included, num_actual_puzz
     global PS_VAL_IDX, PS_TEST_IDX
     global VLAR_CHALLENGE_data_root, VLAR_CHALLENGE_submission_root
+    global device
 
-    device = "cuda"
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     puzzle_diff = {"easy": ""}  # {'easy': 'e', 'medium': 'm', 'hard': 'h'}
     puzzle_diff_str = {"easy": ""}
     osp = os.path.join
@@ -95,19 +97,19 @@ def globals_init(args):
     num_puzzles = 101
     max_qlen = 110
     seed = 10
-    icon_dataset_path = "./dataset/icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
+    icon_dataset_path = "icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
     icon_class_ids = utils.get_icon_dataset_classes(icon_dataset_path)  # os.listdir(icon_dataset_path) # puzzle 1
     signs = np.array(["+", "-", "x", "/"])  # puzzle 58
     NUM_CLASSES_PER_PUZZLE = {}
     SEQ_PUZZLES = [16, 18, 35, 39, 63, 100]
-    SMART_DATASET_INFO_FILE = "./dataset/SMART_info_v2.csv"
+    SMART_DATASET_INFO_FILE = "SMART_info_v2.csv"
     num_actual_puzz = 102
     puzzles_not_included = set([])
     PS_VAL_IDX = [7, 43, 64]
     PS_TEST_IDX = [94, 95, 96, 97, 98, 99, 101, 61, 62, 65, 66, 67, 69, 70, 71, 72, 73, 74, 75, 76, 77]
     
-    VLAR_CHALLENGE_data_root = './dataset/'
-    VLAR_CHALLENGE_submission_root = './submission/'
+    VLAR_CHALLENGE_data_root = '/dataset/'
+    VLAR_CHALLENGE_submission_root = '/submission/'
 
     if not os.path.exists(args.save_root):
         os.makedirs(args.save_root)

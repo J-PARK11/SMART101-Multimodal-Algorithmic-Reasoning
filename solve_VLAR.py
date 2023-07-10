@@ -54,8 +54,8 @@ def make_predictions(challenge_loader, model):
     responses = {}
     with torch.no_grad():
         for i, (im, q, opts, pid) in enumerate(challenge_loader):
-            im = im.cuda()
-            q = q.cuda()
+            im = im.to(gv.device)
+            q = q.to(gv.device)
             out = model(im, q, puzzle_ids=pid)
             pred_max = out.argmax().cpu().numpy()
             try:
@@ -100,7 +100,7 @@ def predict_on_challenge_data(args, pretrained_model_path, challenge_phase='val'
     print('loading model ...');
     model = get_SMART_solver_model(args, pretrained_model_path) # provide the model for evaluation.
     model.eval()
-    model.cuda()
+    model.to(gv.device)
     
     challenge_loader = get_data_loader(args, "challenge", batch_size=1, shuffle=False, num_workers=0) 
     
