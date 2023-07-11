@@ -57,6 +57,3 @@ Here, `<image>` is the name of the docker image you have (“submission” in ou
 $ evalai submission <submission id>
 ```
 to check the status of the submission. Here, submission id is the id provided by evalai when making the docker image submission. 
-
-* Useful commands:
-To remove a docker image, use `$ docker rmi -f <docker image id>`
