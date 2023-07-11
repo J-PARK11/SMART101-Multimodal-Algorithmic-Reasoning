@@ -1,0 +1,66 @@
+{ "VLAR": [{
+      "Id": "Id",
+      "Question": "Question",
+      "Image": "Image",
+      "Modality": "Modality",
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": "D",
+      "E": "E",
+      "Answer": "Answer",
+      "Weight": "Weight"
+},
+{
+      "Id": "201",
+      "Question": "How many more small olive squares are there than small blue squares?",
+      "Image": "puzzle_50_1.png",
+      "Modality": "V+L",
+      "A": "16",
+      "B": "12",
+      "C": "2",
+      "D": "3",
+      "E": "4",
+      "Answer": "E",
+      "Weight": "1"
+},
+{
+      "Id": "202",
+      "Question": "Joseph has three brown, four pink, one blue, and seven yellow pieces of Raspberries. He cuts every non-blue piece of Raspberries in half. Then he separates every non-yellow piece of Raspberries in half. How many pieces of Raspberries will he have?",
+      "Image": "puzzle_91_0.png",
+      "Modality": "L",
+      "A": "47",
+      "B": "38",
+      "C": "44",
+      "D": "39",
+      "E": "50",
+      "Answer": "C",
+      "Weight": "2"
+},
+{
+      "Id": "203",
+      "Question": "An arrow pointing from one thing to another means that the second thing is lonelier than the first. For example, thing B is lonelier than thing A. Which is the loneliest thing?",
+      "Image": "puzzle_66_2.png",
+      "Modality": "V+L",
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": "D",
+      "E": "E",
+      "Answer": "C",
+      "Weight": "3"
+},
+{
+      "Id": "204",
+      "Question": "As shown in the image,Theresa can only jump from one circle to a neighboring circle connected by a line. She cannot jump into any circle more than once. She starts at circle 1 and needs to make exactly 4 jumps to reach circle 3. In how many different ways can Theresa do this?",
+      "Image": "puzzle_48_6.png",
+      "Modality": "V+L",
+      "A": "3",
+      "B": "5",
+      "C": "2",
+      "D": "0",
+      "E": "4",
+      "Answer": "C",
+      "Weight": "4"
+}]
+}
