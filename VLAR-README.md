@@ -14,7 +14,7 @@
         3) Run the prediction model on the test puzzles and collect responses: (see solve_VLAR.py : make_predictions()
         4) Collect the responses in a json file for evaluation: (see solve_VLAR.py: make_response_json()
     
-    For this demo, we provide a pretrained ResNet-50 + BERT pre-trained model trained
+    For this demo, we provide a pretrained ResNet-50 + BERT model trained
     on the SMART-101 dataset in the puzzle_split mode using the code in the above repo.
     This model needs to be downloaded from the below link and copied into ./checkpoints/ckpt_resnet50_bert_212.pth  
     Checkpoint download link: https://www.dropbox.com/s/69ocrjwwccb6fqv/ckpt_resnet50_bert_212.pth?dl=0
@@ -24,7 +24,7 @@
     
     Specifically, note that the VLAR-val.json and VLAR-test.json files containing the VLAR challenge puzzles
     are assumed to be kept in /dataset/ folder, and a method should write the responses to /submission/submission.json
-    as described in make_predictions() below. 
+    as described in make_predictions() in solve_VLAR.py. 
     
     Note
     ----
