@@ -1,9 +1,13 @@
-FROM python:3.8-slim-buster
+FROM anibali/pytorch:1.7.0-cuda11.0-ubuntu20.04
+
+# Install system libraries required by OpenCV.
+RUN sudo apt-get update
+RUN apt-get -y install git 
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Moscow
 
 WORKDIR /vlar
-
-RUN apt-get -y update 
-RUN apt-get -y install git
 
 COPY requirements.txt requirements.txt
 
