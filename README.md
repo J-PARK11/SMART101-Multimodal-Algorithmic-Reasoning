@@ -1,6 +1,6 @@
 <h2>VLAR Challenge: Submission Instructions and Demo</h2>
    
-This repo provides a starter code package (modified from the SMART-101 code here: https://github.com/merlresearch/SMART) for demonstrating how to format your pre-trained model for evaluation in the VLAR-Challege on eval.ai. The code shows 
+This repo provides the submission instructions and a starter code package (modified from the SMART-101 code here: https://github.com/merlresearch/SMART) demonstrating how to format your pre-trained model for evaluation in the VLAR-Challege on eval.ai. The code shows 
 where to expect to read the test/val puzzles from on the eval.ai server and where to produce your prediction results (output of your model) so that it can be evaluated using our VLAR challenge evaluation code. See solve_VLAR.py for implementation details. 
     
 For this starter code demo, we provide a ResNet-50 + BERT pre-trained model that is trained
