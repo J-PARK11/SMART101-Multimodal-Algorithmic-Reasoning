@@ -4,8 +4,13 @@ This repo provides the submission instructions and a starter code package (modif
 where to expect to read the test/val puzzles from on the eval.ai server and where to produce your prediction results (output of your model) so that it can be evaluated using our VLAR challenge evaluation code. See solve_VLAR.py for implementation details. 
     
 For this starter code demo, we provide a ResNet-50 + BERT pre-trained model that is trained
-on the SMART-101 dataset in the puzzle_split mode (see the paper for details on what this split mode is). After cloning the starter code, you will need to download the pretrained model from the link below and copy it to ./checkpoints/ckpt_resnet50_bert_212.pth  
-Checkpoint download link: https://www.dropbox.com/s/69ocrjwwccb6fqv/ckpt_resnet50_bert_212.pth?dl=0
+on the SMART-101 dataset in the puzzle_split mode (see the paper for details on what this split mode is). After cloning the starter code, you will need to download the pretrained model bundle (which includes our model: ./checkpoints/ckpt_resnet50_bert_212.pth as well as BERT and ResNet-50 models) from the below link. Assuming your cloned directory is "vlar-challenge", please do the following
+```
+$ cd vlar-challenge
+$ wget -O vlar_checkpoints.zip https://www.dropbox.com/s/8uapjgh90eb4tus/vlar_checkpoints.zip?dl=0 
+$ unzip vlar_checkpoints.zip
+$ rm vlar_checkpoints.zip
+```
 
 To ensure the code can be run on eval.ai correctly, we are providing a sample VLAR-val.json in ./dataset/ folder. 
 This file shows what the format of a `dev` phase (or a test phase) input to your algorithm is. If your code runs on 
