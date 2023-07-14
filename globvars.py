@@ -45,8 +45,10 @@ class BERT:
         super(BERT, self).__init__()
         from transformers import BertModel, BertTokenizer
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
-        self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        #self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
+        self.model = BertModel.from_pretrained("/checkpoints/BERT/").to(self.device)
+        #self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", cache_dir="./")
+        self.tokenizer = BertTokenizer.from_pretrained("/checkpoints/BERT/")
         self.word_dim = 768
 
     def get_word_dim(self):
@@ -97,12 +99,12 @@ def globals_init(args):
     num_puzzles = 101
     max_qlen = 110
     seed = 10
-    icon_dataset_path = "icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
+    icon_dataset_path = "/checkpoints/icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
     icon_class_ids = utils.get_icon_dataset_classes(icon_dataset_path)  # os.listdir(icon_dataset_path) # puzzle 1
     signs = np.array(["+", "-", "x", "/"])  # puzzle 58
     NUM_CLASSES_PER_PUZZLE = {}
     SEQ_PUZZLES = [16, 18, 35, 39, 63, 100]
-    SMART_DATASET_INFO_FILE = "SMART_info_v2.csv"
+    SMART_DATASET_INFO_FILE = "/checkpoints/SMART_info_v2.csv"
     num_actual_puzz = 102
     puzzles_not_included = set([])
     PS_VAL_IDX = [7, 43, 64]

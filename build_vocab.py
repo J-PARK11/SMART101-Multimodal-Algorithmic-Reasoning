@@ -9,8 +9,8 @@ import nltk
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
-    print("downloading nltk/punkt tokenizer")
-    nltk.download("punkt")
+    print("not downloading nltk/punkt tokenizer")
+#    nltk.download("punkt")
 
 import argparse
 import glob

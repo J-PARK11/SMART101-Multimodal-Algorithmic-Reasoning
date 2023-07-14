@@ -1,13 +1,13 @@
-FROM anibali/pytorch:1.7.0-cuda11.0-ubuntu20.04
-
-# Install system libraries required by OpenCV.
-RUN sudo apt-get update
-RUN apt-get -y install git 
+FROM python:3.8-slim-buster
+#FROM anibali/pytorch:1.7.0-cuda11.0-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 
-WORKDIR /vlar
+# Install system libraries required by OpenCV.
+RUN apt-get -y update 
+RUN apt-get -y install git
+RUN mkdir -p /checkpoints/BERT
 
 COPY requirements.txt requirements.txt
 
@@ -23,8 +23,15 @@ COPY build_vocab.py	./build_vocab.py
 COPY globvars.py	 ./globvars.py
 COPY utils.py ./utils.py
 
-COPY checkpoints/ckpt_resnet50_bert_212.pth ./ckpt_resnet50_bert_212.pth
-COPY data/icon-classes.txt  ./icon-classes.txt  
-COPY data/SMART_info_v2.csv ./SMART_info_v2.csv
+COPY checkpoints/ckpt_resnet50_bert_212.pth /checkpoints/ckpt_resnet50_bert_212.pth
+COPY data/icon-classes.txt  /checkpoints/icon-classes.txt  
+COPY data/SMART_info_v2.csv /checkpoints/SMART_info_v2.csv
 
-CMD ["python", "main.py", "--model_name", "resnet50", "--num_workers", "0", "--loss_type", "classifier", "--word_embed", "bert", "--split_type", "puzzle", "--challenge", "--phase", "test", "--pretrained_model_path", "ckpt_resnet50_bert_212.pth"]
+ADD ./checkpoints/BERT/config.json /checkpoints/BERT/config.json
+ADD ./checkpoints/BERT/pytorch_model.bin /checkpoints/BERT/pytorch_model.bin
+ADD ./checkpoints/BERT/special_tokens_map.json /checkpoints/BERT/special_tokens_map.json
+ADD ./checkpoints/BERT/tokenizer_config.json /checkpoints/BERT/tokenizer_config.json
+ADD ./checkpoints/BERT/vocab.txt /checkpoints/BERT/vocab.txt
+ADD ./checkpoints/resnet50-11ad3fa6.pth /checkpoints/resnet50-11ad3fa6.pth
+
+CMD ["python", "main.py", "--model_name", "resnet50", "--num_workers", "0", "--loss_type", "classifier", "--word_embed", "bert", "--split_type", "puzzle", "--challenge", "--phase", "test", "--pretrained_model_path", "/checkpoints/ckpt_resnet50_bert_212.pth"]
