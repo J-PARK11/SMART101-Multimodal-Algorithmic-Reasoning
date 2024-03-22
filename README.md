@@ -20,8 +20,8 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
    You may use a Python virtual environment and install your packages into it.
    ```
    # create a virtual env
-   $ python3 -m venv .vlar
-   $ source .vlar/bin/activate
+   $ conda create -n VLAR python=3.9
+   $ conda activate VLAR
    $ git clone https://github.com/smartdataset/vlar23_starter_code.git
    $ cd vlar23_starter_code
    # follow the instructions in SMART101-Code-README.md to install the dependencies in requirements.txt
@@ -44,7 +44,7 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
 1. Evaluate your docker container locally (you may use the provided ./dataset/VLAR-val.json for the local run):
     ```bash
     # Testing on val split
-    docker run -v /path/to/local/copy/of/dataset/:/dataset/ --docker-name smart_101_submission
+    docker run -v /path/to/local/copy/of/dataset/:/dataset/ smart_101_submission
     ```
     If the above command runs successfully you will get an output similar to:
     ```
@@ -53,6 +53,7 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
     2023-03-01 16:35:02,244 writing the model responses to file
     2023-03-01 16:35:02,244 done!
     ```
+   If the docker runs correctly, the above step should have produced a file: $(pwd)/dataset/submission.json. Note that, we use a sleep of 5 minutes at the end of the evaluation for internal purposes. You do not need to wait for 5 minutes and and kill the program once 'done' is printed (as above). 
     Note: a similar command will be run to evaluate your submission for the leaderboard. **Please submit your docker for remote evaluation (below) only if it runs successfully on your local setup.** 
 ### Online submission
 Follow instructions in the `submit` tab of the EvalAI challenge page to submit your docker image. Note that you will need a version of EvalAI `>= 1.3.15`. Pasting those instructions here for convenience:
