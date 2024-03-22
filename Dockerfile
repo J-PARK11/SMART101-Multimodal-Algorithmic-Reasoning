@@ -34,4 +34,4 @@ ADD ./checkpoints/BERT/tokenizer_config.json /checkpoints/BERT/tokenizer_config.
 ADD ./checkpoints/BERT/vocab.txt /checkpoints/BERT/vocab.txt
 ADD ./checkpoints/resnet50-11ad3fa6.pth /checkpoints/resnet50-11ad3fa6.pth
 
-CMD ["python", "main.py", "--model_name", "resnet50", "--num_workers", "0", "--loss_type", "classifier", "--word_embed", "bert", "--split_type", "puzzle", "--challenge", "--phase", "test", "--pretrained_model_path", "/checkpoints/ckpt_resnet50_bert_212.pth"]
+CMD ["python", "main.py", "--model_name", "resnet50", "--num_workers", "0", "--loss_type", "classifier", "--word_embed", "bert", "--split_type", "puzzle", "--challenge", "--phase", "val", "--pretrained_model_path", "/checkpoints/ckpt_resnet50_bert_212.pth"]
