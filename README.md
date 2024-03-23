@@ -74,7 +74,6 @@ docker login
 docker tag <docker-image-name>:<tag> <docker-hub-username>/<docker-hub-repository-name>:<tag>
 docker push <docker-hub-username>/<docker-hub-repository>:<tag>
 ```
-<br>
 ***STEP #4:*** Fill this [form](https://docs.google.com/forms/d/e/1FAIpQLSd3cZMkPpQpxg1_WN6w5mb8WeWD15AQQnq4gsUo1Udk40MPrg/viewform?usp=sharing) with your eval.ai <participant id>, the <docker-share-link>, and the details regarding the compute needed for evaluating your submission. You should also provide an email address for correspondence.<br>
 ***STEP #5:*** We will run your submission using the "docker run" commands described above against our test puzzles. We will send you an email with a "submission.json" attachment that contains the responses of your submission on our private test puzzles.<br>
 ***STEP #6:*** The participant then needs to login to eval.ai SMART-101-Challenge-test website (at the link in step (a)), and submit this submission.json file at the test phase (tab). This step will evaluate the submission against the ground truth annotations. The score from the evaluation will be displayed on the leaderboard. <br> 
