@@ -58,10 +58,11 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
 ### Online submission
 We have two separate eval.ai challenges: (i) SMART-101 CVPR 2024 Challenge for the test phase and (ii) another one for the dev phase. These challenges are entirely different and serve different purposes. A participant must create an eval.ai participant profile in (i) for participating in the challenge.
 
-**Test Challenge phase**: This phase/split will be used to decide challenge winners. Each team is allowed a total of 10 submissions until the end of challenge submission phase. The highest performing of these 10 will be automatically chosen. Results on this split will not be made public until the announcement of final results at the [MAR workshop at CVPR 2024](https://marworkshop.github.io/cvpr24/index.html). **Please read the instructions below carefully for this test phase submission**. Your submission will be evaluated on 100 puzzles and will have a total available time of 5 mins to finish.
-a. Create a participant profile on eval.ai at the SMART-101-Challenge-test website [here](https://eval.ai/web/challenges/challenge-page/2247/phases). You will receive a <participant id> after this step.
-b. Follow the steps to create a local docker image on your computer.
-c. Upload your docker image to a docker-sharing website (e.g., docker-hub, or make a tar ball and share via dropbox, for example). This step will produce a <docker-share-link>. Some useful instructions for sharing the docker are provided below.
+**Test Challenge phase**: This phase/split will be used to decide challenge winners. Each team is allowed a total of 10 submissions until the end of challenge submission phase. The highest performing of these 10 will be automatically chosen. Results on this split will not be made public until the announcement of final results at the [MAR workshop at CVPR 2024](https://marworkshop.github.io/cvpr24/index.html). **Please read the instructions below carefully for this test phase submission**. 
+<br>Your submission will be evaluated on 100 puzzles and will have a total available time of 5 mins to finish.<br>
+a. Create a participant profile on eval.ai at the SMART-101-Challenge-test website [here](https://eval.ai/web/challenges/challenge-page/2247/phases). You will receive a <participant id> after this step. <br>
+b. Follow the steps to create a local docker image on your computer.<br>
+c. Upload your docker image to a docker-sharing website (e.g., docker-hub, or make a tar ball and share via dropbox, for example). This step will produce a <docker-share-link>. Some useful instructions for sharing the docker are provided below.<br>
 ```
 # using tar based sharing
 docker save <docker-image-name>:<tag> > <my_submission>.tar
@@ -72,11 +73,11 @@ or
 docker login
 docker tag <docker-image-name>:<tag> <docker-hub-username>/<docker-hub-repository-name>:<tag>
 docker push <docker-hub-username>/<docker-hub-repository>:<tag>
-```
-d. Fill this [form](https://docs.google.com/forms/d/e/1FAIpQLSd3cZMkPpQpxg1_WN6w5mb8WeWD15AQQnq4gsUo1Udk40MPrg/viewform?usp=sharing) with your eval.ai <participant id>, the <docker-share-link>, and the details regarding the compute needed for evaluating your submission. You should also provide an email address for correspondence.
-e. We will run your submission using the "docker run" commands described above against our test puzzles. We will send you an email with a "submission.json" attachment that contains the responses of your submission on our private test puzzles.
-f. The participant then needs to login to eval.ai SMART-101-Challenge-test website (at the link in step (a)), and submit this submission.json file at the test phase (tab). This step will evaluate the submission against the ground truth annotations. The score from the evaluation will be displayed on the leaderboard.  
-
+```<br>
+d. Fill this [form](https://docs.google.com/forms/d/e/1FAIpQLSd3cZMkPpQpxg1_WN6w5mb8WeWD15AQQnq4gsUo1Udk40MPrg/viewform?usp=sharing) with your eval.ai <participant id>, the <docker-share-link>, and the details regarding the compute needed for evaluating your submission. You should also provide an email address for correspondence.<br>
+e. We will run your submission using the "docker run" commands described above against our test puzzles. We will send you an email with a "submission.json" attachment that contains the responses of your submission on our private test puzzles.<br>
+f. The participant then needs to login to eval.ai SMART-101-Challenge-test website (at the link in step (a)), and submit this submission.json file at the test phase (tab). This step will evaluate the submission against the ground truth annotations. The score from the evaluation will be displayed on the leaderboard. <br> 
+<br>
 Please check SMART-101-Challenge-test website for the number of submissions allowed per day in the test phase. If you face any issues or have questions you can ask them by opening an issue on this repository or emailing us.
 
 **Dev phase**: 
