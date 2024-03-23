@@ -24,7 +24,8 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
    $ conda activate VLAR
    $ git clone https://github.com/smartdataset/vlar23_starter_code.git
    $ cd vlar23_starter_code
-   # follow the instructions in SMART101-Code-README.md to install the dependencies in requirements.txt
+   $ pip install -r requirements.txt
+   # follow the instructions in SMART101-Code-README.md if you want to train a model using the SMART-101 dataset.
    ```
 1. Implement your own model or try ours. We provide a simple baseline in `solve_VLAR.py` that uses pretrained ResNet-50 + BERT pre-trained model trained on SMART-101 dataset. To use this pre-trained model, run the following:
    ```
