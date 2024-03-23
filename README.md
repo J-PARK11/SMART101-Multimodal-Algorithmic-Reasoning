@@ -56,7 +56,31 @@ Participate in the contest by registering on the [EvalAI challenge page](https:/
    If the docker runs correctly, the above step should have produced a file: $(pwd)/dataset/submission.json. Note that, we use a sleep of 5 minutes at the end of the evaluation for internal purposes. You do not need to wait for 5 minutes and and kill the program once 'done' is printed (as above). 
     Note: a similar command will be run to evaluate your submission for the leaderboard. **Please submit your docker for remote evaluation (below) only if it runs successfully on your local setup.** 
 ### Online submission
-Follow instructions in the `submit` tab of the EvalAI challenge page to submit your docker image. Note that you will need a version of EvalAI `>= 1.3.15`. Pasting those instructions here for convenience:
+We have two separate eval.ai challenges: (i) SMART-101 CVPR 2024 Challenge for the test phase and (ii) another one for the dev phase. These challenges are entirely different and serve different purposes. A participant must create an eval.ai participant profile in (i) for participating in the challenge.
+
+**Test Challenge phase**: This phase/split will be used to decide challenge winners. Each team is allowed a total of 10 submissions until the end of challenge submission phase. The highest performing of these 10 will be automatically chosen. Results on this split will not be made public until the announcement of final results at the [MAR workshop at CVPR 2024](https://marworkshop.github.io/cvpr24/index.html). **Please read the instructions below carefully for this test phase submission**. Your submission will be evaluated on 100 puzzles and will have a total available time of 5 mins to finish.
+a. Create a participant profile on eval.ai at the SMART-101-Challenge-test website [here](https://eval.ai/web/challenges/challenge-page/2247/phases). You will receive a <participant id> after this step.
+b. Follow the steps to create a local docker image on your computer.
+c. Upload your docker image to a docker-sharing website (e.g., docker-hub, or make a tar ball and share via dropbox, for example). This step will produce a <docker-share-link>. Some useful instructions for sharing the docker are provided below.
+```
+# using tar based sharing
+docker save <docker-image-name>:<tag> > <my_submission>.tar
+```
+or 
+```
+# using docker-hub based sharing. You will need to create a docker-hub login and then run the following on your machine where the docker image exists.
+docker login
+docker tag <docker-image-name>:<tag> <docker-hub-username>/<docker-hub-repository-name>:<tag>
+docker push <docker-hub-username>/<docker-hub-repository>:<tag>
+```
+d. Fill this [form](https://docs.google.com/forms/d/e/1FAIpQLSd3cZMkPpQpxg1_WN6w5mb8WeWD15AQQnq4gsUo1Udk40MPrg/viewform?usp=sharing) with your eval.ai <participant id>, the <docker-share-link>, and the details regarding the compute needed for evaluating your submission. You should also provide an email address for correspondence.
+e. We will run your submission using the "docker run" commands described above against our test puzzles. We will send you an email with a "submission.json" attachment that contains the responses of your submission on our private test puzzles.
+f. The participant then needs to login to eval.ai SMART-101-Challenge-test website (at the link in step (a)), and submit this submission.json file at the test phase (tab). This step will evaluate the submission against the ground truth annotations. The score from the evaluation will be displayed on the leaderboard.  
+
+Please check SMART-101-Challenge-test website for the number of submissions allowed per day in the test phase. If you face any issues or have questions you can ask them by opening an issue on this repository or emailing us.
+
+**Dev phase**: 
+The purpose of this phase/split is sanity checking -- to confirm that our remote evaluation reports the same result as the one you’re seeing locally. Each team is allowed maximum of 100 submissions per day for this phase, but please use them judiciously. We will block and disqualify teams that spam our servers. This validation / dev phase will use a separate eval.ai dev challenge, using a smaller compute infrastructure in order to ensure we are able to run your test docker submissions (see below). Please follow the above steps for this dev phase to create a docker image on your local machine. Next, follow instructions in the `submit` tab of the EvalAI challenge page to submit your docker image. Note that you will need a version of EvalAI `>= 1.3.15`. Pasting those instructions here for convenience:
 ```bash
 # Installing EvalAI Command Line Interface
 pip install "evalai>=1.3.15"
@@ -65,10 +89,5 @@ evalai set_token <your EvalAI participant token>
 # Push docker image to EvalAI docker registry
 # Val phase
 evalai push <image>:<tag> --phase smart-101-vlar-dev2023-2088
-# Test phase
-evalai push <image>:<tag> --phase smart-101-vlar-test2023-2088
 ```
-The challenge consists of the following phases:
-1. **Val phase**: The purpose of this phase/split is sanity checking -- to confirm that our remote evaluation reports the same result as the one you’re seeing locally. Each team is allowed maximum of 100 submissions per day for this phase, but please use them judiciously. We will block and disqualify teams that spam our servers.
-1. **Test Challenge phase**: This phase/split will be used to decide challenge winners. Each team is allowed a total of 10 submissions until the end of challenge submission phase. The highest performing of these 10 will be automatically chosen. Results on this split will not be made public until the announcement of final results at the [VLAR workshop at ICCV](https://wvlar.github.io/iccv23/).
-Note: Your submission will be evaluated on 100 puzzles and will have a total available time of 5 mins to finish. Your submissions will be evaluated on AWS EC2 p2.xlarge instance which has a Tesla K80 GPU (12 GB Memory), 4 CPU cores, and 61 GB RAM. If you need more time/resources for evaluation of your submission please get in touch. If you face any issues or have questions you can ask them by opening an issue on this repository.
+If you face any issues or have questions you can ask them by opening an issue on this repository or emailing us.
