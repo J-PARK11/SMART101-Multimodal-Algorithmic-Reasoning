@@ -81,6 +81,7 @@ docker push <docker-hub-username>/<docker-hub-repository>:<tag>
 <br>
 Please check SMART-101-Challenge-test website for the number of submissions allowed per day in the test phase. If you face any issues or have questions you can ask them by opening an issue on this repository or emailing us.
 
+<!--
 **Dev phase**: 
 The purpose of this phase/split is sanity checking -- to confirm that our remote evaluation reports the same result as the one you’re seeing locally. Each team is allowed maximum of 100 submissions per day for this phase, but please use them judiciously. We will block and disqualify teams that spam our servers. This validation / dev phase will use a separate eval.ai dev challenge, using a smaller compute infrastructure in order to ensure we are able to run your test docker submissions (see below). Please follow the above steps for this dev phase to create a docker image on your local machine. Next, follow instructions in the `submit` tab of the EvalAI challenge page to submit your docker image. Note that you will need a version of EvalAI `>= 1.3.15`. Pasting those instructions here for convenience:
 ```bash
@@ -93,3 +94,4 @@ evalai set_token <your EvalAI participant token>
 evalai push <image>:<tag> --phase smart-101-vlar-dev2023-2088
 ```
 If you face any issues or have questions you can ask them by opening an issue on this repository or emailing us.
+-->
