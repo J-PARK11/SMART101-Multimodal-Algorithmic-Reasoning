@@ -3,12 +3,13 @@
 #
 # SPDX-License-Identifier: MIT
 #
-import json
 import os
-import os.path as osp
 import pdb
-import pickle as pkl
 import sys
+import json
+import torch
+import os.path as osp
+import pickle as pkl
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,6 +18,21 @@ from PIL import Image
 
 import globvars as gv
 
+# For Distributed Data Parallel =========================== #
+import torch.distributed as dist
+
+def init_DDP():
+    dist_url = 'env://'
+    rank = int(os.environ["RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    local_rank = int(os.environ['LOCAL_RANK'])
+    
+    dist.init_process_group(backend='nccl', init_method=dist_url, world_size=world_size, rank=rank)
+    torch.cuda.set_device(local_rank)
+    dist.barrier()
+    
+    if dist.get_rank() == 0:
+        print(f'RANK: {rank}     WORLD_SIZE: {world_size}     LOCAL_RANK: {local_rank}')    
 
 def fix_acc(acc_list):
     """removes accuracy for puzzles in gv.puzzles_not_included"""
@@ -78,7 +94,7 @@ def print_puzz_acc(args, puzz_acc, log=True):
         ax.bar(np.arange(1, gv.num_actual_puzz), fix_acc(acc_list[1:]))
         ax.set_xticks(np.arange(1, gv.num_actual_puzz))
         ax.set_xlabel("puzzle ids", fontsize=16)
-        ax.set_ylabel("$O_{acc}$ %", fontsize=20)
+        ax.set_ylabel("$S_{acc}$ %", fontsize=20)
         fig.tight_layout()
         plt.savefig(os.path.join(args.save_root, "results/%d/acc_perf_scores_1.png" % (gv.seed)))
         plt.close()
@@ -88,7 +104,7 @@ def print_puzz_acc(args, puzz_acc, log=True):
         ax.bar(np.arange(1, gv.num_actual_puzz), fix_acc(opt_acc_list[1:]))
         ax.set_xticks(np.arange(1, gv.num_actual_puzz))  # , [str(i) for i in np.arange(1,num_puzzles+1)])
         ax.set_xlabel("puzzle ids", fontsize=16)
-        ax.set_ylabel("$S_{acc}$ %", fontsize=20)
+        ax.set_ylabel("$O_{acc}$ %", fontsize=20)
         fig.tight_layout()
         plt.savefig(os.path.join(args.save_root, "results/%d/opt_acc_perf_scores_1.png" % (gv.seed)))
         plt.close()
@@ -301,6 +317,16 @@ def get_puzzle_class_info(args):
         puzzle_classes[str(puzzle_id)] = num_classes
     return puzzle_classes
 
+def load_puzzle_cat_info():
+    info_path = '/data/SMART101-release-v1/puzzle_type_info.csv'
+    df = pd.read_csv(info_path)
+    return df
+
+def get_puzzle_cat_info(df, pids):
+    matched_cat = df.loc[pids]['type'].to_numpy()
+    cat_a = [gv.puzzle_category_dict[i]-1 for i in matched_cat]
+    return cat_a
+    
 
 class Logger(object):
     def __init__(self, log_file):
@@ -433,5 +459,3 @@ def backup_code_and_start_logger(args, log_path, seed):
     sys.stdout = Logger(log_file)
     print("logging results to %s" % (log_file))
 
-
-#

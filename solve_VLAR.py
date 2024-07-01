@@ -42,9 +42,7 @@ import globvars as gv
 def get_SMART_solver_model(args, model_path):
     """ A dummy function that needs to be implemented to get a prediction model """
     if args.challenge and (args.phase == 'val' or args.phase == 'test'):
-        im_backbone, _ = net.load_pretrained_models(args, args.model_name, model=None)
-        model = net.SMART_Net(args, im_backbone=im_backbone)
-        net.load_pretrained_models(args, args.model_name, model=model)
+        model = net.load_pretrained_models(args, args.model_name, model=True)
     else:
         raise Exception("SMART solver needs to be in the Challenge mode!")
     
@@ -53,10 +51,10 @@ def get_SMART_solver_model(args, model_path):
 def make_predictions(challenge_loader, model):
     responses = {}
     with torch.no_grad():
-        for i, (im, q, opts, pid) in enumerate(challenge_loader):
+        for i, (im, q, q_stn, opts, pid) in enumerate(challenge_loader):
             im = im.to(gv.device)
             q = q.to(gv.device)
-            out = model(im, q, puzzle_ids=pid)
+            out = model(im, q, q_stn, puzzle_ids=pid)
             pred_max = out.argmax().cpu().numpy()
             try:
                 selected_opt = np.abs(np.array([int(opt[0]) for opt in opts])-pred_max).argmin() # answers are digits.
@@ -66,12 +64,12 @@ def make_predictions(challenge_loader, model):
     return responses
 
 def make_response_json(challenge_loader, responses):
-    puz_cnt = 0;
+    puz_cnt = 0
     if not os.path.exists(gv.VLAR_CHALLENGE_submission_root):
         os.mkdir(gv.VLAR_CHALLENGE_submission_root)
     with open(os.path.join(gv.VLAR_CHALLENGE_submission_root, 'submission.json'), 'w') as pred_json:
         pred_json.write('{ \"VLAR\": [') # header.
-        for i, (_, _, _, pid) in enumerate(challenge_loader):
+        for i, (_, _, _, _, pid) in enumerate(challenge_loader):
             puz = {'Id': str(pid[0].item()), 'Answer': responses[str(pid[0].item())]}
             if puz_cnt > 0:
                 pred_json.write(',\n')
@@ -97,7 +95,7 @@ def get_data_loader(args, split, batch_size=100, shuffle=True, num_workers=6, pi
 def predict_on_challenge_data(args, pretrained_model_path, challenge_phase='val'):
     args.puzzles_file = 'VLAR-val.json' if challenge_phase == 'val' else 'VLAR-test.json'
         
-    print('loading model ...');
+    print('loading model ...')
     model = get_SMART_solver_model(args, pretrained_model_path) # provide the model for evaluation.
     model.eval()
     model.to(gv.device)

@@ -152,3 +152,4 @@ def get_baseline_performance(args, qa_info, split, tot, log=False):
 
     np.save("%s/stats/baseline_%d_%s.npy" % (args.save_root, tot, split), [baseline_sacc, baseline_oacc])
     return baseline_sacc, baseline_oacc
+

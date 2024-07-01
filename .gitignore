@@ -1,0 +1,12 @@
+__pycache__/
+analysis/
+checkpoints/
+dataset/
+Dockerfile_folder/
+warehouse/
+cmd.txt
+caption_data_loader.py
+i-blip_attention_map.ipynb
+qwen_requirements.txt
+requirements.txt
+SimSun.ttf

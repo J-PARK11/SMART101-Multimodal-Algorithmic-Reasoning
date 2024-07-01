@@ -1,0 +1,181 @@
+{
+    // SMART Puzzle VLM Project ======================================= //
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Train SMART.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name", "IBLIP",
+                "--num_workers", "8",
+                "--num_epochs", "5",
+                "--loss_type", "Both",
+                "--batch_size", "16",
+                "--log_freq", "4",
+                "--train_backbone",
+                "--word_embed", "none",
+                "--data_root", "/data/SMART101-release-v1/SMART101-Data/",
+                "--save_root", "./checkpoints/IBLIP-Flan-T5/both_pred_head/",
+                "--puzzles", "all",
+                "--split_type", "puzzle",
+                "--use_option_prompting",
+                "--use_LORA",
+                "--tensorboard_freq", "100",
+                "--lr", "0.0003",
+                "--split_ratio", "100:5:15",
+                "--LLM_type", "t5_xl",
+                "--use_puzzle_type_classifier"
+                // "--use_save_caption_type", "Qwen"
+                // "--caption_type", "LLaVA"
+                ]
+        },
+
+        {
+            "name": "Test SMART.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [ 
+                "--model_name", "IBLIP",
+                "--num_workers", "8",
+                "--loss_type", "Both",
+                "--batch_size", "16",
+                "--word_embed", "none",
+                "--data_root", "/data/SMART101-release-v1/SMART101-Data/",
+                "--save_root", "./checkpoints/IBLIP-Flan-T5/both_pred_head/",  // 로드할 체크포인트 위치 적어야함.
+                "--puzzles", "all",
+                "--split_type", "puzzle",
+                "--test",
+                "--seed", "427",
+                "--use_option_prompting",
+                "--LLM_type", "t5_xl",
+                // "--use_save_caption_type", "Qwen",
+                "--use_puzzle_type_classifier",
+                // "--test_return_output",
+                "--caption_type", "Qwen"
+                ]
+        },
+
+        {
+            "name": "Challenge SMART.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [ 
+                "--model_name", "IBLIP",
+                "--num_workers", "8",
+                "--loss_type", "Both",
+                "--word_embed", "none",
+                "--split_type", "puzzle",
+                "--challenge",
+                "--phase", "val",
+                "--use_LORA",
+                "--use_option_prompting",
+                "--LLM_type", "t5_xl",
+                "--vocab_path", "./checkpoints/vocab_puzzle_all_monolithic.pkl",
+                "--pretrained_model_path", "./checkpoints/IBLIP-Flan-T5/multi_loss/checkpoints/ckpt_IBLIP_none_5087.pth"
+                ]
+        },
+
+        {
+            "name": "extract_caption.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "extract_caption.py",
+            "console": "integratedTerminal",
+            "args": [ 
+                "--model_name", "IBLIP",
+                "--num_workers", "8",
+                "--batch_size", "2",
+                "--word_embed", "none",
+                "--data_root", "/data/SMART101-release-v1/SMART101-Data/",
+                "--save_root", "./checkpoints/caption/",  // 로드할 체크포인트 위치 적어야함.
+                "--puzzles", "all",
+                "--split_ratio", "100:0:0",
+                "--split_type", "standard",
+                "--use_option_prompting",
+                "--caption_type", "Qwen",
+                "--mode", "train",
+                "--gpu_num", "0",
+                "--Whole_Segment", "2",
+                "--Phase", "1",
+                ]
+        },
+
+        {
+            "name": "extract_caption_for_kt.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "extract_caption_for_kt.py",
+            "console": "integratedTerminal",
+            "args": [ 
+                "--batch_size", "5",
+                "--data_root", "./dataset/test-images/",
+                "--save_root", "./checkpoints/dump/",
+                "--gpu_num", "0",
+                "--Whole_Segment", "1",
+                "--Phase", "1"
+                ]
+        },
+
+        {
+            "name": "data_to_pickle.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "data_to_pickle.py",
+            "console": "integratedTerminal",
+            "args": [ 
+                "--model_name", "IBLIP",
+                "--num_workers", "8",
+                "--batch_size", "25",
+                "--word_embed", "none",
+                "--data_root", "/data/SMART101-release-v1/SMART101-Data/",
+                "--save_root", "./checkpoints/pkl/",  // 로드할 체크포인트 위치 적어야함.
+                "--split_ratio", "100:5:15",
+                "--puzzles", "all",
+                "--split_type", "puzzle",
+                "--gpu_num", "0",
+                ]
+        },
+        
+        // torchrun --standalone --nnodes 1 --nproc_per_node 2 main.py --model_name resnet50 --num_workers 2 --num_epochs 100 --loss_type classifier --batch_size 16 --log_freq 10 --train_backbone --data_root /data/SMART101-release-v1/SMART101-Data/ --word_embed bert --save_root ./checkpoints/dump/ --puzzles all --split_type puzzle --use_DDP
+
+        {
+            "name": "DDP Train SMART.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name", "resnet50",
+                "--num_workers", "2",
+                "--num_epochs", "5",
+                "--loss_type", "classifier",
+                "--batch_size", "12",
+                "--log_freq", "1",
+                "--train_backbone",
+                "--word_embed", "bert",
+                "--data_root", "/data/SMART101-release-v1/SMART101-Data/",
+                "--save_root", "./checkpoints/dump/",
+                "--puzzles", "all",
+                "--split_type", "puzzle",
+                "--use_option_prompting",
+                "--use_DDP",
+                // "--use_puzzle_type_classifier"
+                ]
+        },
+
+        {
+            "name": "Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

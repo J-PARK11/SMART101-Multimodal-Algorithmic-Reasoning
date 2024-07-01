@@ -46,9 +46,9 @@ class BERT:
         from transformers import BertModel, BertTokenizer
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         #self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
-        self.model = BertModel.from_pretrained("/checkpoints/BERT/").to(self.device)
+        self.model = BertModel.from_pretrained("./checkpoints/BERT/").to(self.device)
         #self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", cache_dir="./")
-        self.tokenizer = BertTokenizer.from_pretrained("/checkpoints/BERT/")
+        self.tokenizer = BertTokenizer.from_pretrained("./checkpoints/BERT/")
         self.word_dim = 768
 
     def get_word_dim(self):
@@ -88,6 +88,9 @@ def globals_init(args):
     global PS_VAL_IDX, PS_TEST_IDX
     global VLAR_CHALLENGE_data_root, VLAR_CHALLENGE_submission_root
     global device
+    
+    # 내가 추가한 변수들 Global 초기화
+    global num_puzzle_category, puzzle_category_dict
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     puzzle_diff = {"easy": ""}  # {'easy': 'e', 'medium': 'm', 'hard': 'h'}
@@ -99,19 +102,24 @@ def globals_init(args):
     num_puzzles = 101
     max_qlen = 110
     seed = 10
-    icon_dataset_path = "/checkpoints/icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
+    icon_dataset_path = "./checkpoints/RAW/icon-classes.txt"  #'/homes/cherian/train_data/NAR/SMART/SMART_cpl/puzzles/anoops/resources/icons-50/Icons-50/'
     icon_class_ids = utils.get_icon_dataset_classes(icon_dataset_path)  # os.listdir(icon_dataset_path) # puzzle 1
     signs = np.array(["+", "-", "x", "/"])  # puzzle 58
     NUM_CLASSES_PER_PUZZLE = {}
     SEQ_PUZZLES = [16, 18, 35, 39, 63, 100]
-    SMART_DATASET_INFO_FILE = "/checkpoints/SMART_info_v2.csv"
+    SMART_DATASET_INFO_FILE = "./checkpoints/RAW/SMART_info_v2.csv"
     num_actual_puzz = 102
     puzzles_not_included = set([])
     PS_VAL_IDX = [7, 43, 64]
     PS_TEST_IDX = [94, 95, 96, 97, 98, 99, 101, 61, 62, 65, 66, 67, 69, 70, 71, 72, 73, 74, 75, 76, 77]
     
-    VLAR_CHALLENGE_data_root = '/dataset/'
-    VLAR_CHALLENGE_submission_root = '/submission/'
+    # 내가 추가한 Global 변수들 상세
+    num_puzzle_category = 8
+    puzzle_category_dict = {'counting': 1, 'algebra': 2, 'math':3, 'path':4,
+                            'spatial':5, 'measure':6, 'logic':7, 'pattern':8}
+    
+    VLAR_CHALLENGE_data_root = './dataset/'
+    VLAR_CHALLENGE_submission_root = './submission/'
 
     if not os.path.exists(args.save_root):
         os.makedirs(args.save_root)

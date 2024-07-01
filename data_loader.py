@@ -136,7 +136,7 @@ class SMART_Data(Dataset):
         split_type=exclude is to exclude answers from the split, e.g., train on all answers except say 1, and test 1
         split_type=puzzle is to split the puzzles into the respective ratios. so we don't have to do anything here.
         """
-        if split_type == "standard" or split_type == "puzzle" or split_type == "fewshot":
+        if split_type == "standard" or split_type == "fewshot":
             splits = np.array([int(spl) for spl in split_ratio.split(":")]).cumsum()
             n = len(info)
             if split_name == "train":
@@ -150,6 +150,21 @@ class SMART_Data(Dataset):
             else:
                 st = int(np.ceil(n * splits[1] / 100.0))
                 info = info[st:]
+        elif split_type == "puzzle":
+            splits = np.array([int(spl) for spl in split_ratio.split(":")])
+            n = len(info)   # 2000
+            if split_name == "train":
+                st = 0
+                en = int(np.floor(n * splits[0] / 100.0))
+                info = info[st:en]
+            elif split_name == "val":
+                st = 0
+                en = int(np.floor(n * splits[1] / 100.0))
+                info = info[st:en]
+            else:
+                st = 85
+                en = (int(np.floor(n * splits[2] / 100.0)) + st) # 100
+                info = info[st:en]
         elif split_type == "exclude":
             pid = info[0]["puzzle_id"]
             if int(pid) in gv.SEQ_PUZZLES or int(pid) == 58:
@@ -206,6 +221,7 @@ class SMART_TrainData(SMART_Data):
         self.word_embed = args.word_embed
         self.fewshot_K = args.fsK
         self.qa_info = []
+        self.args = args
         train_pids = None
 
         puzzle_ids = (
@@ -237,9 +253,11 @@ class SMART_TrainData(SMART_Data):
 
     def __getitem__(self, idx):
         info = self.qa_info[idx]
+    
         pid = info["puzzle_id"]
         puzzle_root = pid + "/" + gv.puzzle_diff_str[self.diff] + "/"
-        im = self.apply_transform(gv.osp(self.data_root, puzzle_root, "img", info["image"]))
+        im_path = gv.osp(self.data_root, puzzle_root, "img", info["image"])
+        im = self.apply_transform(im_path)
         qa = self.quest_encode(info["Question"])
         opts = 0
         lbl = self.ans_encode(info["Answer"])
@@ -255,7 +273,31 @@ class SMART_TrainData(SMART_Data):
             except:
                 print(info)
                 pdb.set_trace()
-        return im, torch.tensor(qa), torch.tensor(opts), torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(pid))
+        
+        if info:
+            pass
+        else:
+            info = []
+        
+        if ("IBLIP" in self.args.model_name) or (self.args.model_name == 'Qwen'):
+            if self.args.use_option_prompting:
+                opts = [utils.get_val(info, key, is_one_of_option=True) for key in ["A", "B", "C", "D", "E"]]
+                Answer_Option_phrase = ' Options:'
+                for op, an in zip(["A", "B", "C", "D", "E"], opts):
+                    # Answer_Option_phrase += f' {op}: {an},'
+                    Answer_Option_phrase += f' {an},'
+                Answer_Option_phrase = Answer_Option_phrase[:-1]
+                
+                # q_stn = 'Question: ' + info["Question"]
+                q_stn = 'Question: ' + info["Question"] + " You must Return in following 5 Option's Numeral Value."
+                q_stn = q_stn + Answer_Option_phrase
+            else:
+                q_stn = info['Question']
+            if self.args.pkl_extraction_mode:
+                return info
+            return im, torch.tensor(qa), torch.tensor(opts), torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(pid)), q_stn, im_path
+                
+        return im, torch.tensor(qa), torch.tensor(opts), torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(pid)), [], []
 
     def __len__(self):
         return len(self.qa_info)
@@ -268,6 +310,7 @@ class SMART_ValData(SMART_Data):
         self.num_tot = args.data_tot
         self.word_embed = args.word_embed
         self.fewshot_K = args.fsK
+        self.args = args
         self.qa_info = []
 
         self.diff = args.test_diff if split == "test" else args.train_diff
@@ -303,9 +346,11 @@ class SMART_ValData(SMART_Data):
 
     def __getitem__(self, idx):
         info = self.qa_info[idx]
+        
         pid = info["puzzle_id"]
         puzzle_root = info["puzzle_id"] + "/" + gv.puzzle_diff_str[self.diff] + "/"
-        im = self.apply_transform(gv.osp(self.data_root, puzzle_root, "img", info["image"]))
+        im_path = gv.osp(self.data_root, puzzle_root, "img", info["image"])
+        im = self.apply_transform(im_path)
         qa = self.quest_encode(info["Question"])
 
         _ = [utils.str_replace_(info, key) for key in ["A", "B", "C", "D", "E"]]
@@ -319,7 +364,27 @@ class SMART_ValData(SMART_Data):
             answer[0] = answer_value
         else:
             answer[: len(answer_value)] = answer_value
-        return im, torch.tensor(qa), opts, torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(info["puzzle_id"]))
+            
+        if info:
+            pass
+        else:
+            info = []
+            
+        if ("IBLIP" in self.args.model_name) or (self.args.model_name == 'Qwen'):
+            if self.args.use_option_prompting:
+                Answer_Option_phrase = ' Options:'
+                for op, an in zip(["A", "B", "C", "D", "E"], opts):
+                    # Answer_Option_phrase += f' {op}: {an},'
+                    Answer_Option_phrase += f' {an},'
+                Answer_Option_phrase = Answer_Option_phrase[:-1]
+                
+                q_stn = 'Question: ' + info["Question"] + " You must Return in following 5 Option's Numeral Value."
+                q_stn = q_stn + Answer_Option_phrase
+            else:
+                q_stn = info['Question']
+            return im, torch.tensor(qa), torch.tensor(opts), torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(pid)), q_stn, info, im_path
+            
+        return im, torch.tensor(qa), opts, torch.tensor(lbl), torch.tensor(answer), torch.tensor(int(info["puzzle_id"])), [], info, []
 
     def __len__(self):
         return len(self.qa_info)
@@ -328,12 +393,19 @@ class SMART_ValData(SMART_Data):
 class SMART_Challenge_Data(SMART_Data):
     def __init__(self, args, split):
         super().__init__(args)
+        vocab_path = args.vocab_path
         self.data_root = gv.VLAR_CHALLENGE_data_root
         self.word_embed = args.word_embed
         self.puzzles =  self.get_puzzle_questions(args.puzzles_file)
         
+        self.max_qlen = 110
         gv.MAX_VAL = 256 # this is the maximum value of any answer in the SMART 101 training set. 
                          #This need not be the max value in the challenge test set.
+                         
+        if vocab_path != 'none':
+            with open(vocab_path, "rb") as f:
+                self.vocab = pickle.load(f)
+                print("vocabulary size = %d" % (len(self.vocab)))
         
     def get_puzzle_questions(self, json_file):
         """ 
@@ -346,19 +418,26 @@ class SMART_Challenge_Data(SMART_Data):
         puzzle_data = json.loads(puzzle_data)
         assert('VLAR' in puzzle_data.keys())
         return puzzle_data['VLAR'][1:]
+    
+    def quest_encode(self, question):
+        tokens = nltk.tokenize.word_tokenize(question.lower())
+        q_enc = np.zeros((self.max_qlen,), dtype="long")
+        if not self.no_question:
+            enc_tokens = (
+                [self.vocab("<start>")] + [self.vocab(tokens[t]) for t in range(len(tokens))] + [self.vocab("<end>")]
+            )
+            q_enc[: min(self.max_qlen, len(enc_tokens))] = np.array(enc_tokens)
+        return q_enc
 
     def __getitem__(self, idx):
         puzzle = self.puzzles[idx]
         pid = puzzle["Id"]
         im = self.apply_transform(gv.osp(self.data_root, 'test-images', puzzle["Image"]))
-        qa = puzzle["Question"]#) #self.quest_encode()
-        
-        q_enc = torch.zeros(gv.max_qlen, gv.word_dim)
-        q_feat = gv.word_embed(qa)
-        q_enc[:min(gv.max_qlen, len(q_feat)), :] = q_feat
-
+        q_stn = puzzle["Question"]#) #self.quest_encode()
+        qa = self.quest_encode(puzzle["Question"])        
         opts = [puzzle[key] for key in ["A", "B", "C", "D", "E"]]
-        return im, torch.tensor(q_enc), opts, torch.tensor(int(pid))
+        
+        return im, torch.tensor(qa), q_stn, opts, torch.tensor(int(pid))
 
     def __len__(self):
         return len(self.puzzles)
@@ -366,10 +445,10 @@ class SMART_Challenge_Data(SMART_Data):
 def SMART_collate_fn(data):
     """we use it only for val and test to load the options as a list"""
     concat = lambda data_list: torch.cat([x.unsqueeze(0) for x in data_list])
-    im, qa, opts, lbl, answer, puzzle_ids = zip(*data)
+    im, qa, opts, lbl, answer, puzzle_ids, q_stn, info, im_path = zip(*data)
     im = concat(im).float()
     qa = concat(qa)
     lbl = concat(lbl)
     answer = concat(answer)
     puzzle_ids = concat(puzzle_ids)
-    return im, qa, opts, lbl, answer, puzzle_ids
+    return im, qa, opts, lbl, answer, puzzle_ids, q_stn, info, im_path
