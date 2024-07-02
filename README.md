@@ -7,13 +7,13 @@ The two main contributions are: first, to strengthen the text information by gen
 Second, to utilize the image encoder part of SAM to extract superior visual features considering the characteristics and specificity of the puzzle images.
 The technical report and paper can be found at the link below. Thank you. https://arxiv.org/abs/2406.05963
 
-# Architecture
+## Architecture
 ![main_arch](figure/fig_main_arch.png)
 
-# Reward
+## Reward
 ![prize](figure/prize.jpg)
 
-# Reference Link
+## Reference Link
 - Official Challenge Github: https://github.com/wasabipretzel/SMART_mllab
 - Challenge Paper Link: https://arxiv.org/abs/2406.05963
 - Challenge Website: https://eval.ai/web/challenges/challenge-page/2247/overview
